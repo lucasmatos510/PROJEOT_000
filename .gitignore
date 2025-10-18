@@ -41,3 +41,6 @@ Thumbs.db
 config.local.py
 .env
 .env.local
+
+# Diretório de imagens (pode ter nomes muito longos)
+static/img/

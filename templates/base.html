@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <meta name="theme-color" content="#1e40af" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>{% block title %}WADE COLETOR{% endblock %}</title>
+
+  <!-- Google Font (opcional) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  {% block head_extra %}{% endblock %}
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="{{ url_for('index') }}">
+        <!-- barcode/scanner icon + label -->
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle; margin-right:8px">
+          <rect x="2" y="4" width="2" height="16" fill="#fff" />
+          <rect x="6" y="6" width="8" height="2" fill="#fff" />
+          <rect x="6" y="11" width="8" height="2" fill="#fff" />
+          <rect x="6" y="16" width="8" height="2" fill="#fff" />
+          <rect x="16" y="4" width="2" height="16" fill="#fff" />
+        </svg>
+        <span style="vertical-align:middle; font-weight:800;">WADE COLETOR</span>
+      </a>
+      <nav class="nav">
+        <!-- hamburger menu (Coletar removed from nav) -->
+        <div class="hamburger-wrap">
+          <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+          <div class="hamburger-menu" id="hamburgerMenu" aria-hidden="true">
+            {% if session.get('empresa_logada') %}
+              <a class="menu-item" href="{{ url_for('empresa_dashboard') }}">📊 Minhas Coletas</a>
+              <a class="menu-item" href="{{ url_for('coleta') }}">➕ Nova Coleta</a>
+              <a class="menu-item" href="{{ url_for('logout_empresa') }}">🚪 Sair</a>
+            {% else %}
+              <a class="menu-item" href="{{ url_for('login_empresa') }}">🏢 Área da Empresa</a>
+            {% endif %}
+            <a class="menu-item" href="{{ url_for('admin_login') }}">⚙️ Administrador</a>
+            <a class="menu-item" href="#">📞 Suporte técnico</a>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <small>© {{ (2025) }} WADE COLETOR — Interface modernizada</small>
+    </div>
+  </footer>
+</body>
+</html>
+
+<script>
+  // Toggle do menu hamburger
+  (function(){
+    const btn = document.getElementById('hamburgerBtn');
+    const menu = document.getElementById('hamburgerMenu');
+    if(!btn || !menu) return;
+    btn.addEventListener('click', function(e){
+      const open = menu.classList.toggle('open');
+      menu.setAttribute('aria-hidden', !open);
+    });
+    // fechar ao clicar fora
+    document.addEventListener('click', function(e){
+      if(!menu.classList.contains('open')) return;
+      const target = e.target;
+      if(!menu.contains(target) && !btn.contains(target)){
+        menu.classList.remove('open');
+        menu.setAttribute('aria-hidden', 'true');
+      }
+    });
+  })();
+</script>

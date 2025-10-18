@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Coleta - WADE COLETOR{% endblock %}
+{% block content %}
+  <section class="hero-landing" aria-labelledby="hero-title">
+    <div class="hero-overlay" aria-hidden="true"></div>
+    <div class="hero-center">
+      <p class="hero-explain">Sistema de coleta de estoque com registro automatizado de produtos.</p>
+      <div class="hero-logo" aria-hidden="true">
+        <svg width="72" height="40" viewBox="0 0 120 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="12" width="100" height="50" rx="8" fill="rgba(255,255,255,0.06)" />
+          <path d="M60 8 L80 28 L60 48 L40 28 Z" fill="#7dd3fc" opacity="0.95" />
+        </svg>
+      </div>
+      <h3 style="margin: 0 0 10px 0; color: #7dd3fc; font-size: 18px; font-weight: 600; letter-spacing: 1px;">WADE COLETOR</h3>
+      <h1 id="hero-title" class="hero-title">COLETA</h1>
+      <div class="hero-messages">
+        <ul class="hero-list">
+          <li>Tecnologia para reduzir erros e aumentar profissionalismo.</li>
+          <li>Sistemas que ajudam no crescimento da equipe.</li>
+          <li>Processos digitais para maior produtividade e qualidade.</li>
+        </ul>
+      </div>
+      <div class="hero-actions">
+        <a class="btn ghost launch" href="{{ url_for('login_empresa') }}">
+          <span>📱</span> Iniciar Coleta
+        </a>
+      </div>
+    </div>
+  </section>
+  <!-- mensagens estáticas para visual profissional -->
+{% endblock %}

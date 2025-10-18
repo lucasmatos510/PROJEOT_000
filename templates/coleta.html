@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Coleta - WADE COLETOR{% endblock %}
+{% block content %}
+  <section class="panel">
+    <div class="coleta-header">
+      <h2 class="panel-title">📱 Coletar produtos</h2>
+      <div class="empresa-info">
+        <p class="empresa-nome">{{ nome_empresa }}</p>
+        <div class="empresa-actions">
+          <a href="{{ url_for('empresa_dashboard') }}" class="btn-link primary">📊 Dashboard</a>
+          <a href="{{ url_for('logout_empresa') }}" class="btn-link danger">🚪 Sair</a>
+        </div>
+      </div>
+    </div>
+    <!-- Minimal instruction removed per user request -->
+
+    <div style="text-align:center; margin-bottom:12px;">
+      <button id="newCollectionBtn" class="btn primary" type="button" style="padding:12px 18px;">NOVA COLETA</button>
+    </div>
+
+    <form id="coletaForm" class="form-grid" method="POST" novalidate style="display:none;">
+      <!-- campos com os mesmos 'name' usados no app.py -->
+      <input name="empresa_nome" type="hidden" value="{{ nome_empresa }}" />
+
+      <label class="field">
+        <span>Nota fiscal</span>
+        <input name="nota_fiscal" required placeholder="0000/0000" />
+      </label>
+
+      <label class="field">
+        <span>Barcode</span>
+        <input id="barcodeInput" name="barcode" placeholder="Código de barras" />
+      </label>
+
+      <label class="field">
+        <span>Nome do produto</span>
+        <input name="product_name" placeholder="Produto X" />
+      </label>
+
+      <label class="field small">
+        <span>Caixas recebidas</span>
+        <input name="boxes_received" type="number" min="0" placeholder="0" />
+      </label>
+
+      <label class="field small">
+        <span>Unidades por caixa</span>
+        <input name="units_per_box" type="number" min="0" placeholder="0" />
+      </label>
+
+      <div class="form-actions">
+        <button type="submit" class="btn primary">Enviar</button>
+        <a href="{{ url_for('index') }}" class="btn ghost">Voltar</a>
+      </div>
+    </form>
+
+    <!-- Modal simples para nome da coleta -->
+    <div id="collectionModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
+      <div style="background:#fff; color:#071022; padding:18px; border-radius:10px; width:90%; max-width:420px; box-shadow:0 12px 40px rgba(2,6,23,0.5); margin:0 auto;">
+        <h3 style="margin:0 0 8px; text-transform:uppercase; font-size:16px;">INFORME O NOME DA COLETA</h3>
+        <input id="collectionName" placeholder="Ex: BALAN" style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1; margin-bottom:12px;" />
+        <div style="display:flex; gap:8px; justify-content:flex-end">
+          <button id="cancelCollection" class="btn ghost" type="button" style="background:#f8fafc; color:#334155; border:1px solid rgba(15,23,40,0.04);">CANCELAR</button>
+          <button id="confirmCollection" class="btn" type="button" style="background:#10b981; color:#fff; border:none;">AVANÇAR</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Scanner removed: using manual input only -->
+  <script>
+    // Modal logic for new collection
+    (function(){
+      const newBtn = document.getElementById('newCollectionBtn');
+      const modal = document.getElementById('collectionModal');
+      const cancel = document.getElementById('cancelCollection');
+      const confirm = document.getElementById('confirmCollection');
+      const nameInput = document.getElementById('collectionName');
+      const form = document.getElementById('coletaForm');
+      if(!newBtn || !modal || !cancel || !confirm || !nameInput || !form) return;
+      function showModal(){ modal.style.display='flex'; }
+      function hideModal(){ modal.style.display='none'; }
+      newBtn.addEventListener('click', ()=>{ showModal(); nameInput.focus(); });
+      cancel.addEventListener('click', ()=>{ hideModal(); });
+      confirm.addEventListener('click', ()=>{
+        const v = nameInput.value && nameInput.value.trim();
+        if(!v){ alert('Informe um nome para a coleta.'); nameInput.focus(); return; }
+        hideModal();
+        form.style.display = '';
+        window.scrollTo({ top: form.offsetTop - 40, behavior: 'smooth' });
+      });
+    })();
+  </script>
+{% endblock %}

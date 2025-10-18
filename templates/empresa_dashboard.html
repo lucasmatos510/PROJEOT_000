@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - {{ nome_empresa }}{% endblock %}
+{% block content %}
+  <section class="panel">
+    <div class="admin-top">
+      <h2 class="panel-title">📊 {{ nome_empresa }}</h2>
+      <div class="enterprise-actions">
+        <a href="{{ url_for('coleta') }}" class="btn primary">➕ Nova Coleta</a>
+        <a href="{{ url_for('logout_empresa') }}" class="btn ghost">🚪 Sair</a>
+      </div>
+    </div>
+
+    {% if not agrupados %}
+      <div style="text-align: center; padding: 40px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+        <p class="empty" style="margin: 0 0 15px 0; font-size: 16px;">Nenhuma coleta encontrada.</p>
+        <a href="{{ url_for('coleta') }}" class="btn primary">Fazer Primeira Coleta</a>
+      </div>
+    {% else %}
+      <div class="groups">
+        {% for (empresa, nota), itens in agrupados.items() %}
+          <article class="group-card">
+            <header class="group-head">
+              <div class="meta">
+                <span class="label">Nota Fiscal</span>
+                <div class="value highlight">{{ nota }}</div>
+              </div>
+              <div class="meta">
+                <span class="label">Total de Itens</span>
+                <div class="value highlight">{{ itens|length }}</div>
+              </div>
+              <div class="meta">
+                <span class="label">Total de Caixas</span>
+                <div class="value highlight">
+                  {% set total_caixas = itens|sum(attribute='boxes_received') %}
+                  {{ total_caixas if total_caixas else 0 }}
+                </div>
+              </div>
+
+              <form method="POST" action="{{ url_for('empresa_limpar_nota') }}" onsubmit="return confirm('Remover todos os itens desta nota fiscal {{ nota }}?');">
+                <input type="hidden" name="nota" value="{{ nota }}">
+                <button type="submit" class="btn danger small">🗑️ Limpar Nota</button>
+              </form>
+            </header>
+
+            <div class="items">
+              <table class="table">
+                <thead>
+                  <tr><th>Código de Barras</th><th>Produto</th><th>Caixas</th><th>Unidades/Caixa</th><th>Total Unidades</th></tr>
+                </thead>
+                <tbody>
+                  {% for item in itens %}
+                    <tr>
+                      <td data-label="Código de Barras">{{ item.barcode or '-' }}</td>
+                      <td data-label="Produto">{{ item.product_name or '-' }}</td>
+                      <td data-label="Caixas">{{ item.boxes_received or 0 }}</td>
+                      <td data-label="Unidades/Caixa">{{ item.units_per_box or 0 }}</td>
+                      <td data-label="Total Unidades" style="font-weight: 600; color: #7dd3fc;">
+                        {% set total_units = (item.boxes_received or 0) * (item.units_per_box or 0) %}
+                        {{ total_units }}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+
+      <!-- Resumo geral -->
+      <div style="margin-top: 20px; padding: 15px; background: rgba(125, 211, 252, 0.1); border-radius: 8px; border-left: 4px solid #7dd3fc;">
+        <h3 style="margin: 0 0 10px 0; color: #7dd3fc; font-size: 16px;">📊 Resumo Geral</h3>
+        {% set total_notas = agrupados|length %}
+        {% set total_produtos = agrupados.values()|sum(attribute='|length')|sum %}
+        {% set total_caixas_geral = 0 %}
+        {% set total_unidades_geral = 0 %}
+        {% for nota_itens in agrupados.values() %}
+          {% for item in nota_itens %}
+            {% set total_caixas_geral = total_caixas_geral + (item.boxes_received or 0) %}
+            {% set total_unidades_geral = total_unidades_geral + ((item.boxes_received or 0) * (item.units_per_box or 0)) %}
+          {% endfor %}
+        {% endfor %}
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; font-size: 14px;">
+          <div><strong>Notas Fiscais:</strong> {{ total_notas }}</div>
+          <div><strong>Produtos:</strong> {{ total_produtos }}</div>
+          <div><strong>Total Caixas:</strong> {{ total_caixas_geral }}</div>
+          <div><strong>Total Unidades:</strong> {{ total_unidades_geral }}</div>
+        </div>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

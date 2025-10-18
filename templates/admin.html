@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Admin - WADE COLETOR{% endblock %}
+{% block content %}
+  <section class="panel">
+    <div class="admin-top">
+      <h2 class="panel-title">Relatório por empresa / nota</h2>
+      <a href="{{ url_for('index') }}" class="btn ghost">Voltar</a>
+    </div>
+
+    <!-- Seção de cadastro de empresas -->
+    <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+      <h3 style="margin: 0 0 15px 0; color: #7dd3fc;">Gerenciar Empresas</h3>
+      
+      <!-- Formulário para cadastrar nova empresa -->
+      <form method="POST" action="{{ url_for('cadastrar_empresa') }}" style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+        <input name="nome_empresa" placeholder="Nome da Empresa" required style="flex: 1; min-width: 200px; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+        <input name="email" type="email" placeholder="Email" required style="flex: 1; min-width: 200px; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+        <input name="senha" placeholder="Senha" required style="flex: 1; min-width: 150px; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+        <button type="submit" class="btn primary">Cadastrar</button>
+      </form>
+
+      <!-- Lista de empresas cadastradas -->
+      {% if empresas %}
+        <div style="max-height: 200px; overflow-y: auto;">
+          <table class="table" style="font-size: 14px;">
+            <thead>
+              <tr><th>Empresa</th><th>Email</th></tr>
+            </thead>
+            <tbody>
+              {% for empresa in empresas %}
+                <tr>
+                  <td>{{ empresa[0] }}</td>
+                  <td>{{ empresa[1] }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p style="color: #888; font-size: 14px;">Nenhuma empresa cadastrada.</p>
+      {% endif %}
+    </div>
+
+    {% if not agrupados %}
+      <p class="empty">Nenhuma nota encontrada.</p>
+    {% else %}
+      <div class="groups">
+        {% for (empresa, nota), itens in agrupados.items() %}
+          <article class="group-card">
+            <header class="group-head">
+              <div class="meta">
+                <span class="label">Empresa</span>
+                <div class="value highlight">{{ empresa }}</div>
+              </div>
+              <div class="meta">
+                <span class="label">Nota</span>
+                <div class="value highlight">{{ nota }}</div>
+              </div>
+
+              <form method="POST" action="{{ url_for('limpar_nota') }}" onsubmit="return confirm('Remover todos os itens desta nota?');">
+                <input type="hidden" name="empresa" value="{{ empresa }}">
+                <input type="hidden" name="nota" value="{{ nota }}">
+                <button type="submit" class="btn danger small">Limpar nota</button>
+              </form>
+            </header>
+
+            <div class="items">
+              <table class="table">
+                <thead>
+                  <tr><th>Barcode</th><th>Produto</th><th>Caixas</th><th>Unidades/caixa</th></tr>
+                </thead>
+                <tbody>
+                  {% for item in itens %}
+                    <tr>
+                      <td data-label="Barcode">{{ item.barcode }}</td>
+                      <td data-label="Produto">{{ item.product_name }}</td>
+                      <td data-label="Caixas">{{ item.boxes_received }}</td>
+                      <td data-label="Unidades/caixa">{{ item.units_per_box }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

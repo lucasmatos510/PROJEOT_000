@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Login Admin - WADE COLETOR{% endblock %}
+{% block content %}
+  <section class="panel panel-center">
+    <h2 class="panel-title">Área do administrador</h2>
+
+    {% if error %}
+      <div class="alert">{{ error }}</div>
+    {% endif %}
+
+    <form class="form-login" method="POST">
+      <label class="field">
+        <span>Usuário</span>
+        <input name="username" required />
+      </label>
+
+      <label class="field">
+        <span>Senha</span>
+        <input name="password" type="password" required />
+      </label>
+
+      <div class="form-actions">
+        <button type="submit" class="btn primary">Entrar</button>
+        <a href="{{ url_for('index') }}" class="btn ghost">Voltar</a>
+      </div>
+    </form>
+  </section>
+{% endblock %}

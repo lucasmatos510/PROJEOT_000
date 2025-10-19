@@ -9,11 +9,20 @@ you can access it from other devices on the same LAN for testing.
 from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
 import os
+from dotenv import load_dotenv
+
+# Carregar variáveis de ambiente do arquivo .env
+load_dotenv()
 
 
 app = Flask(__name__)
-# Use environment variable if provided, otherwise a default secret for dev
-app.secret_key = os.environ.get('JOJO_SECRET', 'dev_secret_wade_2025')
+# Use environment variable for SECRET_KEY or fallback to a default for development
+SECRET_KEY = os.environ.get("SECRET_KEY")
+if SECRET_KEY:
+    app.secret_key = SECRET_KEY
+else:
+    # Fallback for development - generate a random key
+    app.secret_key = os.environ.get('JOJO_SECRET', 'dev_secret_wade_2025_fallback')
 
 
 @app.context_processor
@@ -282,6 +291,11 @@ def limpar_nota():
         conn.commit()
         conn.close()
     return redirect(url_for('admin'))
+
+
+@app.route('/suporte')
+def suporte():
+    return render_template('suporte.html')
 
 
 if __name__ == '__main__':

@@ -1,0 +1,23 @@
+# Render Blueprint para WADE COLETOR
+# Este arquivo configura automaticamente o deploy no Render
+
+services:
+  - type: web
+    name: wade-coletor
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn --config gunicorn.conf.py wsgi:app"
+    plan: free
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: FLASK_ENV
+        value: production
+      - key: FLASK_DEBUG
+        value: false
+      - key: PORT
+        value: 10000
+      - key: HOST
+        value: 0.0.0.0
+      - key: PYTHON_VERSION
+        value: 3.11.4

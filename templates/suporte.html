@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+{% block title %}Suporte Técnico - WADE COLETOR{% endblock %}
+{% block content %}
+  <section class="panel panel-center">
+    <div class="suporte-header">
+      <div class="suporte-icon">
+        📞
+      </div>
+      <h2 class="panel-title">Suporte Técnico</h2>
+      <p class="suporte-subtitle">Precisa de ajuda? Entre em contato conosco!</p>
+    </div>
+
+    <div class="suporte-content">
+      <div class="contato-card">
+        <div class="contato-info">
+          <div class="contato-item">
+            <div class="contato-icon">📱</div>
+            <div class="contato-details">
+              <h3>WhatsApp / Telefone</h3>
+              <a href="tel:+5573999731333" class="contato-link phone">
+                (73) 99973-1333
+              </a>
+              <a href="https://wa.me/5573999731333?text=Ol%C3%A1!%20Preciso%20de%20ajuda%20com%20o%20WADE%20COLETOR" 
+                 target="_blank" 
+                 class="btn primary whatsapp-btn">
+                💬 Abrir WhatsApp
+              </a>
+            </div>
+          </div>
+
+          <div class="contato-item">
+            <div class="contato-icon">⏰</div>
+            <div class="contato-details">
+              <h3>Horário de Atendimento</h3>
+              <p>Segunda a Sexta: 8h às 18h</p>
+              <p>Sábado: 8h às 12h</p>
+              <p class="destaque">Resposta rápida via WhatsApp!</p>
+            </div>
+          </div>
+
+          <div class="contato-item">
+            <div class="contato-icon">🛠️</div>
+            <div class="contato-details">
+              <h3>Tipos de Suporte</h3>
+              <ul class="suporte-list">
+                <li>✅ Configuração do sistema</li>
+                <li>✅ Problemas de login</li>
+                <li>✅ Dúvidas sobre coleta</li>
+                <li>✅ Relatórios e dashboards</li>
+                <li>✅ Treinamento da equipe</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dicas-rapidas">
+        <h3>💡 Dicas Rápidas</h3>
+        <div class="dicas-grid">
+          <div class="dica-card">
+            <h4>🔐 Esqueceu a senha?</h4>
+            <p>Entre em contato via WhatsApp com o nome da empresa para resetar sua senha.</p>
+          </div>
+          <div class="dica-card">
+            <h4>📊 Como ver relatórios?</h4>
+            <p>Após fazer login, clique em "Minhas Coletas" para ver todos os dados da sua empresa.</p>
+          </div>
+          <div class="dica-card">
+            <h4>📱 Problemas no mobile?</h4>
+            <p>Certifique-se de estar usando um navegador atualizado (Chrome, Safari, Edge).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="suporte-footer">
+      <a href="{{ url_for('index') }}" class="btn ghost">
+        🏠 Voltar ao Início
+      </a>
+    </div>
+  </section>
+
+  <style>
+    .suporte-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .suporte-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      animation: pulse 2s infinite;
+    }
+
+    .suporte-subtitle {
+      color: var(--text-secondary);
+      font-size: 18px;
+      margin-top: 8px;
+    }
+
+    .suporte-content {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .contato-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-md);
+    }
+
+    .contato-info {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .contato-item {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .contato-icon {
+      font-size: 32px;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+
+    .contato-details h3 {
+      margin: 0 0 12px 0;
+      color: var(--text-primary);
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .contato-details p {
+      margin: 4px 0;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .contato-link.phone {
+      display: block;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--accent-2);
+      text-decoration: none;
+      margin: 8px 0 16px 0;
+      transition: var(--transition);
+    }
+
+    .contato-link.phone:hover {
+      color: var(--accent);
+      transform: scale(1.05);
+    }
+
+    .whatsapp-btn {
+      background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+      border: none;
+      font-size: 16px;
+      padding: 12px 24px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .whatsapp-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+    }
+
+    .suporte-list {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0 0 0;
+    }
+
+    .suporte-list li {
+      padding: 6px 0;
+      color: var(--text-secondary);
+      font-size: 15px;
+    }
+
+    .destaque {
+      color: var(--success) !important;
+      font-weight: 600;
+    }
+
+    .dicas-rapidas {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      border: 1px solid var(--border);
+    }
+
+    .dicas-rapidas h3 {
+      margin: 0 0 24px 0;
+      color: var(--text-primary);
+      font-size: 22px;
+      text-align: center;
+    }
+
+    .dicas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .dica-card {
+      background: var(--surface);
+      padding: 20px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      transition: var(--transition);
+    }
+
+    .dica-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .dica-card h4 {
+      margin: 0 0 12px 0;
+      color: var(--text-primary);
+      font-size: 16px;
+    }
+
+    .dica-card p {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .suporte-footer {
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 767px) {
+      .contato-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+      }
+
+      .contato-icon {
+        margin: 0 auto;
+      }
+
+      .contato-link.phone {
+        font-size: 20px;
+      }
+
+      .dicas-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .contato-card,
+      .dicas-rapidas {
+        padding: 24px 16px;
+      }
+    }
+  </style>
+{% endblock %}

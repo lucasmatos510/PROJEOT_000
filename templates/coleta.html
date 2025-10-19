@@ -28,8 +28,27 @@
       </label>
 
       <label class="field">
-        <span>Barcode</span>
-        <input id="barcodeInput" name="barcode" placeholder="Código de barras" />
+        <span>Código de Barras</span>
+        <div class="barcode-input-container">
+          <input id="barcodeInput" name="barcode" placeholder="Digite ou escaneie o código de barras" />
+          <button type="button" id="scanButton" class="btn-scan">
+            📷 Escanear
+          </button>
+        </div>
+        <div id="scanner-container" style="display: none;">
+          <div class="scanner-header">
+            <span class="scanner-status">📹 Posicione o código de barras na câmera</span>
+          </div>
+          <div id="scanner"></div>
+          <div class="scanner-controls">
+            <button type="button" id="stopScanButton" class="btn danger small">
+              ⏹ Parar Scanner
+            </button>
+            <div class="scanner-tips">
+              <small>💡 Mantenha o código bem iluminado e centralizado</small>
+            </div>
+          </div>
+        </div>
       </label>
 
       <label class="field">
@@ -65,7 +84,10 @@
       </div>
     </div>
   </section>
-  <!-- Scanner removed: using manual input only -->
+
+  <!-- ZXing-js Library - Scanner mais moderno -->
+  <script src="https://unpkg.com/@zxing/library@latest/umd/index.min.js"></script>
+
   <script>
     // Modal logic for new collection
     (function(){
@@ -86,6 +108,196 @@
         hideModal();
         form.style.display = '';
         window.scrollTo({ top: form.offsetTop - 40, behavior: 'smooth' });
+      });
+    })();
+
+    // Modern Barcode Scanner Logic with ZXing-js
+    (function(){
+      const scanButton = document.getElementById('scanButton');
+      const stopScanButton = document.getElementById('stopScanButton');
+      const scannerContainer = document.getElementById('scanner-container');
+      const barcodeInput = document.getElementById('barcodeInput');
+      
+      if(!scanButton || !stopScanButton || !scannerContainer || !barcodeInput) return;
+
+      let codeReader = null;
+      let scannerActive = false;
+      let currentStream = null;
+
+      scanButton.addEventListener('click', startScanner);
+      stopScanButton.addEventListener('click', stopScanner);
+
+      async function startScanner() {
+        if (scannerActive) return;
+        
+        try {
+          // Inicializa o leitor de código
+          codeReader = new ZXing.BrowserMultiFormatReader();
+          
+          scannerContainer.style.display = 'block';
+          scanButton.disabled = true;
+          scanButton.textContent = '🔍 Iniciando câmera...';
+          
+          // Criar elemento de vídeo
+          const videoElement = document.createElement('video');
+          videoElement.id = 'scanner-video';
+          videoElement.style.width = '100%';
+          videoElement.style.height = '100%';
+          videoElement.style.objectFit = 'cover';
+          
+          const scannerDiv = document.getElementById('scanner');
+          scannerDiv.innerHTML = '';
+          scannerDiv.appendChild(videoElement);
+
+          // Listar dispositivos de vídeo disponíveis
+          const videoInputDevices = await ZXing.BrowserCodeReader.listVideoInputDevices();
+          console.log('Dispositivos de vídeo encontrados:', videoInputDevices.length);
+          
+          // Preferir câmera traseira se disponível
+          let selectedDeviceId = null;
+          if (videoInputDevices.length > 0) {
+            const backCamera = videoInputDevices.find(device => 
+              device.label.toLowerCase().includes('back') || 
+              device.label.toLowerCase().includes('traseira') ||
+              device.label.toLowerCase().includes('environment')
+            );
+            selectedDeviceId = backCamera ? backCamera.deviceId : videoInputDevices[0].deviceId;
+          }
+
+          scanButton.textContent = '📷 Escaneando...';
+          scannerActive = true;
+
+          // Iniciar o scanner
+          const result = await codeReader.decodeOnceFromVideoDevice(selectedDeviceId, 'scanner-video');
+          
+          if (result) {
+            const code = result.text;
+            console.log("Código detectado:", code);
+            
+            // Preenche o input com o código detectado
+            barcodeInput.value = code;
+            
+            // Para o scanner automaticamente após detectar
+            stopScanner();
+            
+            // Foca no próximo campo
+            const nextField = barcodeInput.closest('.field').nextElementSibling?.querySelector('input');
+            if (nextField) {
+              nextField.focus();
+            }
+            
+            // Feedback visual de sucesso
+            barcodeInput.style.backgroundColor = '#d4edda';
+            barcodeInput.style.borderColor = '#10b981';
+            setTimeout(() => {
+              barcodeInput.style.backgroundColor = '';
+              barcodeInput.style.borderColor = '';
+            }, 3000);
+
+            // Mostrar notificação de sucesso
+            showNotification('✅ Código escaneado com sucesso!', 'success');
+          }
+
+        } catch (err) {
+          console.error('Erro ao inicializar scanner:', err);
+          let errorMessage = 'Erro ao acessar a câmera. ';
+          
+          if (err.name === 'NotAllowedError') {
+            errorMessage += 'Permissão negada. Clique no ícone da câmera na barra de endereços e permita o acesso.';
+          } else if (err.name === 'NotFoundError') {
+            errorMessage += 'Nenhuma câmera encontrada no dispositivo.';
+          } else if (err.name === 'NotSupportedError') {
+            errorMessage += 'Scanner não suportado neste navegador.';
+          } else {
+            errorMessage += 'Verifique se deu permissão para usar a câmera.';
+          }
+          
+          showNotification('❌ ' + errorMessage, 'error');
+          stopScanner();
+        }
+      }
+
+      function stopScanner() {
+        if (!scannerActive) return;
+        
+        try {
+          if (codeReader) {
+            codeReader.reset();
+            codeReader = null;
+          }
+          
+          // Parar todas as streams de vídeo
+          const videoElement = document.getElementById('scanner-video');
+          if (videoElement && videoElement.srcObject) {
+            const tracks = videoElement.srcObject.getTracks();
+            tracks.forEach(track => track.stop());
+            videoElement.srcObject = null;
+          }
+          
+          scannerContainer.style.display = 'none';
+          scannerActive = false;
+          scanButton.disabled = false;
+          scanButton.textContent = '📷 Escanear';
+          
+          // Limpar o container do scanner
+          const scannerDiv = document.getElementById('scanner');
+          if (scannerDiv) {
+            scannerDiv.innerHTML = '';
+          }
+          
+        } catch (err) {
+          console.error('Erro ao parar scanner:', err);
+        }
+      }
+
+      // Função para mostrar notificações
+      function showNotification(message, type = 'info') {
+        // Remove notificação existente
+        const existingNotification = document.querySelector('.scanner-notification');
+        if (existingNotification) {
+          existingNotification.remove();
+        }
+
+        const notification = document.createElement('div');
+        notification.className = `scanner-notification ${type}`;
+        notification.textContent = message;
+        notification.style.cssText = `
+          position: fixed;
+          top: 80px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+          color: white;
+          padding: 12px 20px;
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: 600;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+          z-index: 1000;
+          max-width: 90%;
+          text-align: center;
+          animation: slideDown 0.3s ease;
+        `;
+
+        document.body.appendChild(notification);
+
+        // Remove após 4 segundos
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.style.animation = 'slideUp 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+          }
+        }, 4000);
+      }
+
+      // Parar o scanner se o usuário sair da página
+      window.addEventListener('beforeunload', stopScanner);
+      
+      // Parar scanner se a aba perder o foco
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden && scannerActive) {
+          stopScanner();
+        }
       });
     })();
   </script>
